@@ -1,0 +1,50 @@
+---
+title: "Driver code example (for 'dhandle.R')"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Import the source code (or else, "package" or "library")
+```{r warning=FALSE,message=FALSE,error=FALSE}
+source('dhandle.R')  # pre-req: the file 'dhandle.R' must be in the current working dir.
+```
+
+## 2. Load dataframes (pre-req: variables about the same attribute are in matching positions in all dataframes)
+```{r}
+wav1 <- data.frame(bob=c(0,0), cat=c(0,0), dad=c(0,0), kit=c(0,0))
+wav3 <- data.frame(ell=c(0,0), gig=c(0,0), mom=c(0,0), rec=c(0,0))
+wav5 <- data.frame(nor=c(0,0), pap=c(0,0), pup=c(0,0), pug=c(0,0))
+```
+
+## 3. Merge data across waves into single dataframe with desired variable names
+```{r}
+result_df <- dmerge(list(wav1, wav3, wav5),            # @param[1] = waves:
+                                                       #   a list of dataframes each with
+                                                       #   wave-specific data.  
+                    c('wav1', 'wav3', 'wav5'),         # @param[2] = w_names:
+                                                       #   a vector of desired labels for
+                                                       #   the waves.
+                    c('var1', 'var2', 'var3', 'var4')  # @param[3] = var_names:
+                    )                                  #   a vector of desired labels for
+                                                       #   the variables.
+```
+
+## 4. Apply an operation*, along the specified columns, for each observation in dataframe ```x```, and store the result in a new column in ```x```
+```{r}
+dapply(c('any', 'eq', 1),                         # @param[1] = operation:
+                                                  #   a vector indicating the desired
+                                                  #   operation (e.g. does observation
+                                                  #   have the value 1 in any of the
+                                                  #   specified columns?)
+       result_df,                                 # @param[2] = x:
+                                                  #   the dataframe to operate on.
+       c('wav1_var1', 'wav3_var1', 'wav5_var1'),  # @param[3] = to_cols:
+                                                  #   the names of columns to operate on.
+       'any1'                                     # @param[4] = result_col_name:
+       )                                          #   the name of the column where the
+                                                  #   operation result will be stored.
+```
+*Note: the only operation currently supported is ```"c('any', 'eq', i)"```, where $i$ is an integer.
